@@ -8,6 +8,6 @@ from store.models import Product, OrderItem
 
 # Create your views here.
 def say_hello(request):
-    query_set = OrderItem.objects.values("product_id").distinct()
+    query_set = Product.objects.defer("description")
 
     return render(request, "hello.html", {"name": "Siwar", "products": list(query_set)})
