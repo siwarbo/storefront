@@ -9,6 +9,8 @@ from tags.models import ContentType, TaggedItem
 
 # Create your views here.
 def say_hello(request):
-    query_set = TaggedItem.objects.get_tags_for(Product, 1)
+    query_set = Product.objects.all()
+    list(query_set)
+    query_set[0]
 
     return render(request, "hello.html", {"name": "Siwar", "tags": list(query_set)})
