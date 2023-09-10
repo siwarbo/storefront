@@ -9,10 +9,10 @@ from tags.models import ContentType, TaggedItem
 
 # Create your views here.
 def say_hello(request):
-    collection = Collection()
-    collection.title = "Video Games"
-    collection.featured_product = Product(pk=1)
-    collection.save()
-    collection.id
+    # collection = Collection(pk=11)
+    # collection.featured_product = None
+    # collection.save()
+
+    Collection.objects.filter(pk=11).update(featured_product=None)
 
     return render(request, "hello.html", {"name": "Siwar"})
