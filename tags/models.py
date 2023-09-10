@@ -7,6 +7,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 class TaggedItemManager(models.Manager):
     def get_taggs_for(self, object_type, object_id):
         content_type = ContentType.objects.get_for_model(object_type)
+
         return TaggedItem.objects.select_related("tag").filter(
             content_type=content_type, object_id=object_id
         )

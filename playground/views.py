@@ -1,17 +1,25 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, F, Value, Func, Count, ExpressionWrapper
 from django.db.models.functions import Concat
-from django.core.exceptions import ObjectDoesNotExist
-from store.models import Product, OrderItem, Order, Customer
 from django.db.models.fields import DecimalField
+from tags.models import TaggedItem, ContentType
+from store.models import Product, Collection
 
 
 # Create your views here.
 def say_hello(request):
-    discoounted_price = ExpressionWrapper(
-        F("unit_price") * 0.8, output_field=DecimalField()
-    )
-    query_set = Product.objects.annotate(discounted_price=discoounted_price)
+    collection = Collection()
+    collection.title = "Video Games"
+    collection.featured_product = Product(pk=1)
+    collection.save()
+    collection.id
+    # collection = Collection(pk=11)
 
-    return render(request, "hello.html", {"name": "Siwar", "result": list(query_set)})
+    # collection.featured_product = None
+    # collection.save()
+
+    Collection.objects.filter(pk=11).update(featured_product=None)
+
+    return render(request, "hello.html", {"name": "Rami"})
