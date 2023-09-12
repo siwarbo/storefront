@@ -50,8 +50,17 @@ class ProductAdmin(admin.ModelAdmin):
         )
 
 
+class OrderItemInline(admin.TabularInline):
+    # autocomplete_fields = ["product"]
+    model = models.OrderItem
+    extra = 0
+    min_num = 1
+    max_num = 10
+
+
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
+    inlines = [OrderItemInline]
     autocomplete_fields = ["customer"]
     list_display = ["id", "payment_status", "customer"]
     list_editable = ["payment_status"]
