@@ -2,6 +2,7 @@ from store.pagination import DefaultPagination
 from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -13,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 from .filters import ProductFilter
-from .models import Cart, CartItem, Collection, Product, Review,Customer
+from .models import Cart, CartItem, Collection, Product, Review, Customer
 from .serializers import (
     AddCartItemSerializer,
     CartItemSerializer,
@@ -22,7 +23,7 @@ from .serializers import (
     ProductSerializer,
     ReviewSerializer,
     UpdateCartItemSerializer,
-    CustomerSerializer
+    CustomerSerializer,
 )
 
 
@@ -103,6 +104,21 @@ class CartItemViewSet(ModelViewSet):
             "product"
         )
 
-class CustomerViewSet(CreateModelMixin,RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
-    queryset=Customer.objects.all()
-    serializer_class=CustomerSerializer
+
+class CustomerViewSet(
+    CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet
+):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+
+    @action(detail=False, methods=["GET", "PUT"])
+    def me(self, request):
+        (customer, created) = Customer.objects.get(user_id=request.user.id)
+        if request.method == "GET":
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif request.method == "PUT":
+            serializer = CustomerSerializer(customer, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
