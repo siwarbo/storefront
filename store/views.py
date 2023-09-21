@@ -12,9 +12,9 @@ from rest_framework.mixins import (
 )
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.permissions import IsAuthenticated, AllowAny,IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework import status
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly,ViewCustomerHistoryPermission
 from .filters import ProductFilter
 from .models import Cart, CartItem, Collection, Product, Review, Customer
 from .serializers import (
@@ -115,14 +115,18 @@ class CustomerViewSet(
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = [IsAuthenticated]
-    permission_classes=[IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
-    @action(detail=False, methods=["GET", "PUT"],permission_classes=[IsAuthenticated])
+    @action(detail=True, permission_classes=[ViewCustomerHistoryPermission])
+    def history(self, request, pk):
+        return Response("ok")
+
+    @action(detail=False, methods=["GET", "PUT"], permission_classes=[IsAuthenticated])
     def me(self, request):
         (customer, created) = Customer.objects.get(user_id=request.user.id)
         if request.method == "GET":
